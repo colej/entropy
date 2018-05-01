@@ -34,5 +34,3 @@ def oversample_binning(x,y,yerr=None,phStart=-0.5,phStop=0.5,nbins=100):
 		bin_errs = None
 
 	return bwidth,bins,bin_means,bin_errs
-
-
