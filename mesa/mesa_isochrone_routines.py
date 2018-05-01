@@ -4,7 +4,7 @@ from scipy.interpolate import interp1d
 from glob import glob
 
 from entropy.mesa import hdf5_io_support as h5io
-from entropy.general.smoothing import smooth
+from entropy.general import smoothing.smooth import smooth
 
 def distance_function(xj,wj,npoints):
     ## xj --> array of quantities used for calculating distance
