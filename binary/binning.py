@@ -1,5 +1,4 @@
 import numpy as np
-import keppy as kp
 
 
 def run_binning(x,y,yerr=None,nbins=100,alias=False):
