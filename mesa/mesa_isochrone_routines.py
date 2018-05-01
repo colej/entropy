@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from glob import glob
 
-from mesa import hdf5_io_support as h5io
-from smoothing import smooth
+from entropy.mesa import hdf5_io_support as h5io
+from entropy.general.smoothing import smooth
 
 def distance_function(xj,wj,npoints):
     ## xj --> array of quantities used for calculating distance
@@ -201,7 +201,8 @@ def construct_isochrones(tracks,i_ages,savename):
     for cc,i_age in enumerate(i_ages):
         print 'ISOCHRONE FOR: ',i_age/1e6,' Myrs'
         mass0s = []
-        for n_eep in range(20,npoints-10):
+        #for n_eep in range(20,npoints-10):
+        for n_eep in range(npoints):
 
             eep_subsample = { key: [] for key in keys }
 
