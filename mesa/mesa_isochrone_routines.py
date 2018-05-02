@@ -226,10 +226,6 @@ def construct_isochrones(tracks,i_ages,savename):
 
                 for key in keys:
                     cval = np.array(eep_subsample[key])
-                    # print key
-                    # print cval/1e6
-                    # print mass0
-                    # print eep_masses
                     i_func = interp1d( eep_masses, cval, kind='cubic' )
                     # i_func = interp1d( eep_masses, cval, kind='slinear' )
                     isochrones['age-%s'%cc][key].append( i_func( mass0 ) )
