@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from mesa.mesa_isochrone_routines import hdf5_io_support as h5io
+from entropy.mesa.mesa_isochrone_routines import hdf5_io_support as h5io
 
 def load_track(file,skip_header=0,type='ascii'):
 
