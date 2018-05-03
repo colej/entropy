@@ -44,8 +44,9 @@ def interpolate_on_age(track,delta_t,keys=["M","logL","logTeff","logR","logroeff
 
 
 def costfunction(obs,tracks,eval_keys=["logL","logTeff"]):
-    ## len(obs) = len(sigma) = len(eval_keys)
+    ## @input
     ## obs is dictionary
+
 
     weight = 0.5/np.pi
     for key in eval_keys:
@@ -54,24 +55,26 @@ def costfunction(obs,tracks,eval_keys=["logL","logTeff"]):
     ## Calculate normalization factor rho_(T,L)
     cost = 0.
     for track in tracks:
-        track_cost = 1.
         for ii in range(len(track['M'])):
-            track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
-                                       / obs[key]['sigma']**2 )
+            track_cost = 1.
+            for key in eval_keys:
+                track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
+                                           / obs[key]['sigma']**2 )
             track_cost *= track['M'][ii]
-        cost += track_cost
+            cost += track_cost
     rho = weight * cost
     inverse_rho = 1./rho
 
     ## Calculate weighted mass
     wMass = 0.
     for track in tracks:
-        track_cost = 1.
         for ii in range(len(track['M'])):
-            track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
-                                       / obs[key]['sigma']**2 )
+            track_cost = 1.
+            for key in eval_keys:
+                track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
+                                           / obs[key]['sigma']**2 )
             track_cost *= (track['M'][ii]**2)*inverse_rho
-        wMass += track_cost
+            wMass += track_cost
     wMass *= weight
 
     return wMass
