@@ -7,6 +7,8 @@ def load_track(file,skip_header=0,type='ascii'):
 
     if type=='ascii':
         track = np.genfromtxt(file,skip_header=skip_header,names=True)
+        npms  = np.where( track["Ph"] != 1 )
+        track = track[npms]
     # elif type=='hdf5':
     #     track = h5io.read_hdf5_history(file)
 
