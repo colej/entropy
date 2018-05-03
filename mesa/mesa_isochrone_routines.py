@@ -117,15 +117,17 @@ def generate_secondary_eeps(primary_eeps,npoints=150):
     return secondary_eeps
 
 
-def construct_eep(track,npoints=100):
+def construct_eep(track,npoints=100,keys=None):
 
     ## Find Primary EEPs
     primary_eeps = generate_primary_eeps(track)
-    keys = np.array( [ key for key in primary_eeps[0].keys() ] )
+    if keys is not None:
+        keys = np.array(keys)
+    else:
+        keys = np.array( [ key for key in primary_eeps[0].keys() ] )
 
     ## Find Secondary EEPs
     secondary_eeps = generate_secondary_eeps(primary_eeps[:-1], npoints)
-
 
     # plt.plot(track['log_Teff'],track['log_g'],'k-')
     # for ii,eep in enumerate(primary_eeps[:-1]):
@@ -142,7 +144,7 @@ def construct_eep(track,npoints=100):
         eep_track[key] = []
 
     for ii,eep in enumerate(primary_eeps[:-1]):
-        for key in eep:
+        for key in keys:
             eep_track[key].extend( np.hstack( [ eep[key][0],secondary_eeps[ii][key][1:],eep[key][-1] ] ) )
 
     return eep_track
@@ -190,10 +192,16 @@ def construct_isochrones(tracks,i_ages,savename):
     masses,tracks = zip(*zipp)
 
     npoints = len( tracks[0]['star_age'] )
+    # keys    = ['star_age','star_mass','log_L','log_R','log_Teff','log_g',
+    #            'log_cntr_T','log_cntr_Rho','log_cntr_P',
+    #            'center_h1','center_he4',
+    #            'surface_h1','surface_he3','surface_he4','surface_c12','surface_n14',
+    #            'Omega_crit','Asymptotic_dP','core_mass_custom','k2_stellar_harmonic'
+    #            ]
     keys    = ['star_age','star_mass','log_L','log_R','log_Teff','log_g',
                'log_cntr_T','log_cntr_Rho','log_cntr_P',
                'center_h1','center_he4',
-               'surface_h1','surface_he3','surface_he4','surface_c12','surface_n14',
+               'surface_c12',
                'Omega_crit','Asymptotic_dP','core_mass_custom','k2_stellar_harmonic'
                ]
 
