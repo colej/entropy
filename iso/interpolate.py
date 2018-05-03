@@ -54,8 +54,8 @@ def costfunction(obs,tracks,eval_keys=["LogL","LogTeff"]):
     for track in tracks:
         track_cost = 1.
         for ii in range(len(track['M'])):
-                track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
-                                           / obs[key]['sigma']**2 )
+            track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
+                                       / obs[key]['sigma']**2 )
             track_cost *= track['M'][ii]
         cost += track_cost
     rho = weight * cost
@@ -66,8 +66,8 @@ def costfunction(obs,tracks,eval_keys=["LogL","LogTeff"]):
     for track in tracks:
         track_cost = 1.
         for ii in range(len(track['M'])):
-                track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
-                                           / obs[key]['sigma']**2 )
+            track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
+                                       / obs[key]['sigma']**2 )
             track_cost *= (track['M'][ii]**2)*inverse_rho
         wMass += track_cost
     wMass *= weight
