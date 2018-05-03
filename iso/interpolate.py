@@ -43,7 +43,7 @@ def interpolate_on_age(track,delta_t,keys=["M","logL","logTeff","logR","logroeff
     return i_track
 
 
-def costfunction(obs,tracks,eval_keys=["LogL","LogTeff"]):
+def costfunction(obs,tracks,eval_keys=["logL","logTeff"]):
     ## len(obs) = len(sigma) = len(eval_keys)
     ## obs is dictionary
 
