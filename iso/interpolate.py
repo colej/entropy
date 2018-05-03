@@ -1,14 +1,14 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from entropy.mesa.mesa_isochrone_routines import hdf5_io_support as h5io
+# from entropy.mesa.mesa_isochrone_routines import hdf5_io_support as h5io
 
 def load_track(file,skip_header=0,type='ascii'):
 
     if type=='ascii':
         track = np.genfromtxt(file,skip_header=skip_header,names=True)
-    elif type=='hdf5':
-        track = h5io.read_hdf5_history(file)
+    # elif type=='hdf5':
+    #     track = h5io.read_hdf5_history(file)
 
     return track
 
