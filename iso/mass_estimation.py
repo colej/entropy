@@ -86,7 +86,6 @@ def weighted_mass(obs,tracks,eval_keys=["logL","logTeff"]):
                 track_cost *= np.exp( -0.5* (obs[key]['value'] - track[key][ii])**2
                                            / sigma**2 )
 
-            track_cost *= (track['M'][ii]**2)*inverse_rho
             wMass  += track_cost * (track['M'][ii]**2)*inverse_rho
             wiMass += track_cost * (track['M'][0]**2)*inverse_irho
 
