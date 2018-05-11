@@ -269,8 +269,9 @@ def construct_isochrones(tracks,i_ages,savename):
         header = '# AGE[Myr]  %s'%' '.join( [ '%s'%key for key in keys ] )
         fout.write(header+'\n')
         for cc,i_age in enumerate(i_ages):
+            print 'Writing %.1f isochrone to file'%(i_age/1e6)
             for n in range(len(isochrones['age-%i'%cc]['star_mass'])):
-                print n,'/',len(isochrones['age-%i'%cc]['star_mass'])
+                # print n,'/',len(isochrones['age-%i'%cc]['star_mass'])
                 fout.write( '%f %s \n'%(i_age,' '.join( [ '%.8f'%isochrones['age-%i'%cc][key][n] for key in keys] )) )
 
 
