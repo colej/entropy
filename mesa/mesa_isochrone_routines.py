@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, PchipInterpolator
 from glob import glob
 
 from entropy.mesa import hdf5_io_support as h5io
@@ -98,10 +98,8 @@ def generate_secondary_eeps(primary_eeps,npoints=150):
 
     for ii,eep in enumerate(primary_eeps):
 
-        #print 'DISTANCES: ',np.shape( distances_per_eep[ii] ),distances_per_eep[ii][0],distances_per_eep[ii][-1]
-
-        interpolated_primary_eeps.append( { key: interp1d( distances_per_eep[ii], eep[key], kind='cubic') for jj,key in enumerate(eep) } )
-        # interpolated_primary_eeps.append( { key: interp1d( distances_per_eep[ii], eep[key], kind='slinear') for jj,key in enumerate(eep) } )
+        # interpolated_primary_eeps.append( { key: interp1d( distances_per_eep[ii], eep[key], kind='cubic') for jj,key in enumerate(eep) } )
+        interpolated_primary_eeps.append( { key: PchipInterpolator( distances_per_eep[ii], eep[key], extrapolate=False) for jj,key in enumerate(eep) } )
 
     deltas = []
     for jj,distance in enumerate(distances_per_eep):
@@ -175,8 +173,11 @@ def interpolate_mass_tracks(tracks, masses, i_masses):
     for kk in range(npoints):
         for jj,key in enumerate(keys):
             quantity_at_npoint = [ track[key][kk] for track in tracks ]
-            i_func = interp1d( masses, quantity_at_npoint, kind='cubic')
-            # i_func = interp1d( masses, quantity_at_npoint, kind='slinear')
+            zipped = zip(masses,quantity_at_npoint)
+            zipped.sort(key=lambda x:x[0])
+            sorted_masses,sorted_quantity = zip(*zipped)
+            # i_func = interp1d( masses, quantity_at_npoint, kind='cubic')
+            i_func = PchipInterpolator( sorted_masses, sorted_quantity, extrapolate=False)
             i_val  = i_func(i_masses)
             for ii,val in enumerate(i_val):
                 interpolated_tracks[ii,jj,kk] = val
@@ -226,16 +227,22 @@ def construct_isochrones(tracks,i_ages,savename):
 
 
             if ( ( min(eep_ages) < i_age < max(eep_ages) ) & (len(eep_masses) > 3) ) :
-                i_age_func     = interp1d( eep_ages, eep_masses, kind='cubic' )
-                # i_age_func     = interp1d( eep_ages, eep_masses, kind='quadratic' )
-                # i_age_func     = interp1d( eep_ages, eep_masses, kind='slinear' )
-                mass0 = i_age_func(i_age)
+
+                zipped = zip(eep_ages,eep_masses)
+                zipped.sort(key=lambda x:x[0])
+                sorted_eep_ages,sorted_eep_masses = zip(*zipped)
+                # i_age_func     = interp1d( eep_ages, eep_masses, kind='cubic' )
+                i_age_func = PchipInterpolator(sorted_eep_ages, sorted_eep_masses, extrapolate=False)
+                mass0      = i_age_func(i_age)
                 mass0s.append(mass0)
 
                 for key in keys:
-                    cval = np.array(eep_subsample[key])
-                    i_func = interp1d( eep_masses, cval, kind='cubic' )
-                    # i_func = interp1d( eep_masses, cval, kind='slinear' )
+                    cval   = np.array(eep_subsample[key])
+                    zipped = zip(eep_masses, cval)
+                    zipped.sort(key=lambda x:x[0])
+                    sorted_eep_masses, sorted_cval = zip(*zipped)
+                    i_func = PchipInterpolator(sorted_eep_masses, sorted_cval, extrapolate=False)
+                    # i_func = interp1d( eep_masses, cval, kind='cubic' )
                     isochrones['age-%s'%cc][key].append( i_func( mass0 ) )
 
         #         plt.figure(1)
