@@ -8,35 +8,35 @@
 	file_format = 'MESA'               !! File format of the evolutionary model
 	uniform_rot = .True.               !! Turn on uniform rotation on GYRE level
 	Omega_rot = VROT                   !! Rotation rate to be applied uniformly
-        Omega_units = 'CYC_PER_DAY'        !! Units of the rotation rate
+    Omega_units = 'CYC_PER_DAY'        !! Units of the rotation rate
 
 /
 
 &mode
 	l = 1
 	m = 1
-        tag = 'l1m1' ! Tag for namelist matching
-        n_pg_max = N_PG_MAX
-        n_pg_min = N_PG_MIN
+    tag = 'l1m1' ! Tag for namelist matching
+    n_pg_max = N_PG_MAX
+    n_pg_min = N_PG_MIN
 /
 
- 
+
 &osc
-        inner_bound = 'REGULAR'
+    inner_bound = 'REGULAR'
 	outer_bound = 'VACUUM'
 	inertia_norm = 'BOTH'
-        rotation_method = 'TAR'
+    rotation_method = 'TAR'
 /
 
 &num
 	diff_scheme = 'MAGNUS_GL4'
 	n_iter_max = 50
-        !! The rest of the defaults are fine
+    !! The rest of the defaults are fine
 /
 
 &scan
 	grid_type = 'INVERSE'
-        grid_frame = 'COROT_I'
+    grid_frame = 'COROT_I'
 
 	freq_min = FREQ_MIN
 	freq_max = FREQ_MAX
@@ -50,7 +50,7 @@
 
 &grid
 	alpha_osc = 10			! At least 5 points per oscillatory wavelength
-	alpha_exp = 5			! At least 1 point per exponential 'wavelength'	
+	alpha_exp = 5			! At least 1 point per exponential 'wavelength'
 	n_inner = 5
 	alpha_thm = 0
 	alpha_str = 0
@@ -60,6 +60,7 @@
 &ad_output
 	summary_file = OUTPUT
 	freq_units = 'CYC_PER_DAY'
+    freq_frame = 'INERTIAL'
 	summary_file_format = 'TXT'
 	summary_item_list = 'M_star,R_star,L_star,l,m,n_p,n_g,n_pg,omega,freq,E_norm' ! Items to appear in summary file
 

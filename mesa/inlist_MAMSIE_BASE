@@ -4,7 +4,7 @@
     show_log_description_at_start = .false.
 
   ! We do not want to load from a saved model or use PMS model
-    load_saved_model = .false.
+    load_saved_model =.false.
     create_pre_main_sequence_model = .false.
     
   ! Using the updated opacity tables by Moravveji (2015) for 75% Fe and Ni enhancement

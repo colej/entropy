@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import os,logging
 import read_mesa as rm
@@ -10,10 +10,11 @@ def corot_to_inertial(f_c,f_rot,azimuthal_order):
         return f_c + azimuthal_order*f_rot
 
 
-def write_gyre_in( gyre_in_file,mesa_pulsation_file, gyre_out_file,
+def write_gyre_in( gyre_in_file, mesa_pulsation_file, gyre_out_file,
                    freq_min_inertial=-1.0, freq_max_inertial=-1.0, 
                    npg_min=-90,npg_max=-10, omega_rot=-1.0, azimuthal_order=1,
-                   gyre_base_file = '/home/cole/python/mesa/GYRE_MAMSIE_BASE'):
+                   gyre_base_file = os.path.expandvars('$VSC_DATA/python/mesa/GYRE_MAMSIE_BASE')
+                  ):
 
         freq_min_corot = freq_min_inertial - azimuthal_order * omega_rot
         freq_max_corot = freq_max_inertial - azimuthal_order * omega_rot
@@ -25,7 +26,7 @@ def write_gyre_in( gyre_in_file,mesa_pulsation_file, gyre_out_file,
                         'OUTPUT'  : '{}'.format("'"+gyre_out_file+"'"),
                         'N_PG_MIN': '{:1.0f}'.format(npg_min),
                         'N_PG_MAX': '{:1.0f}'.format(npg_max),
-                        'FREQ_MIN': '{:8.6f}'.format(freq_min_corot),
+                        'FREQ_MIN': '{:8.6f}'.format(max(freq_min_corot,0.1)),
                         'FREQ_MAX': '{:8.6f}'.format(freq_max_corot),
                         'VROT'    : '{:12.10}'.format(omega_rot)
                         }
@@ -43,6 +44,7 @@ def write_gyre_in( gyre_in_file,mesa_pulsation_file, gyre_out_file,
         return
 
 
+
 def run_gyre(gyre_in_file, gyre_out_file ):
 
         print '\tIN RUN GYRE:'
@@ -54,7 +56,7 @@ def run_gyre(gyre_in_file, gyre_out_file ):
         if gyre_proc.returncode is not None:
                 print '\t\t\t\tProcess Return code: ',gyre_proc.returncode
                 try:
-                       	gyre_proc.kill()
+                        gyre_proc.kill()
                 except:
                         print 'couldnt kill gyre process'
                 return -np.inf,None
@@ -65,7 +67,7 @@ def run_gyre(gyre_in_file, gyre_out_file ):
                 except:
                         print 'Gyre Proc alrady terminated'
 
-
+        
         ## Read frequencies, n_pgs and translate back to inertial frame
         gyre_data      = np.genfromtxt(gyre_out_file,skip_header=5,names=True)
         freqs_inertial = gyre_data['Refreq']
@@ -172,6 +174,7 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 
 	#plt.show()
 
+
 	sequences = []
 	## Look through all pairs of obs and theoretical frequencies and 
 	## check if the next obs freqency has a corresponding theoretical frequency
@@ -187,14 +190,8 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 			sequences.append(np.array(current).reshape(len(current),4))
 			current = []
 
-	#print 'SEQUENCES: '
 	len_list = np.array([len(x) for x in sequences])
 	longest = np.where(len_list == max(len_list))[0] #[0]
-
-	#print len_list
-	#for candidate in sequences:
-		#print candidate
-		#print candidate,np.sum(candidate[:,-1])/len(candidate)
 
 
 	## Test if there really is one longest sequence
@@ -235,9 +232,6 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 
 
 
-	print
-	print
-
 	#final_theoretical_periods = np.sort(np.hstack([ordered_theoretical_periods_a,ordered_theoretical_periods_b]))[::-1]
 	final_theoretical_periods = np.array(ordered_theoretical_periods)
 
@@ -248,7 +242,9 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 	obs_series_errors = np.array(obs_series_errors)
 	thr_series        = np.array(thr_series)
 
-	series_chi2 = np.sum( (obs_series-thr_series)**2 /obs_series_errors**2 ) / len(obs_series)
+	#series_chi2 = np.sum( (obs_series-thr_series)**2 /obs_series_errors**2 ) / len(obs_series)
+        print 'orders: %i - %i'%(corresponding_orders[0],corresponding_orders[-1])
+
 
 	#fig = plt.figure(1,figsize=(6.6957,6.6957))
 	#fig.suptitle('$\mathrm{Longest \\ Sequence}$',fontsize=20)
@@ -345,6 +341,7 @@ def chisq_best_sequence(tperiods,orders,operiods,operiods_errors):
 	obs_series_errors = np.array(obs_series_errors)
 	thr_series        = np.array(thr_series)
 	series_chi2 = np.sum( (obs_series-thr_series)**2 /obs_series_errors**2 ) / len(obs_series)
+
 
 
 	fig = plt.figure(1,figsize=(6.6957,6.6957))
