@@ -2,8 +2,9 @@ EMCEE_VERSION = '2.1.0'
 MESA_VERSION  = 'r10108'
 import numpy as np
 import collections
-import mesa.gyre_support as gy
 import subprocess
+
+import entropy.mesa.gyre_support as gy
 
 def get_adjpars_mcmc(file):
 
@@ -12,7 +13,7 @@ def get_adjpars_mcmc(file):
                 vals = line.split(' ')
                 par  = vals[0].strip()
                 adjpars[par]={ 'value':0., 'priors':(float(vals[1]),float(vals[2])),
-                               'type':vals[3], 'index':vals[4].strip() 
+                               'type':vals[3], 'index':vals[4].strip()
                              }
         #adjpars['central_h1_sigma']={'value':0.09,'priors':(0.0005,0.1),
                                      #'type':'flat','index':'primary'}
@@ -32,7 +33,7 @@ def write_mesa_inlist(inlist, adjpars, history_file,
                       pulse_file='', save_pulse_data_logical='.true.',
                       central_h1=0.0001, x_logic_ctrl_1 = '.true.',
                       max_age=1e36, nsteps_adjust_before_max_age=0,
-                      base_inlist='/home/cole/python/mesa/inlist_MAMSIE_BASE'):
+                      base_inlist='/home/cole/python/entropy/mesa/inlist_MAMSIE_BASE_FE_NET'):
 
         print 'WRITING INLIST'
         with open(base_inlist, 'r') as f:
@@ -69,10 +70,10 @@ def write_mesa_inlist(inlist, adjpars, history_file,
 
 
 def run_mesa(run_com,history_file):
-        
-        
+
+
         mesa_proc = subprocess.Popen(run_com,bufsize=-1,stdout= subprocess.PIPE, stderr= subprocess.PIPE)
-        
+
         subout = mesa_proc.stdout.readlines()
 
         if mesa_proc.returncode is not None:
@@ -96,7 +97,7 @@ def run_mesa(run_com,history_file):
                 if np.any([ crit in out for out in subout for crit in stop_crits ]) :
 
                         data_star         = np.genfromtxt(history_file,skip_header=5,names=True)
-                
+
                         teff_star         = 10**data_star['log_Teff'][-1]
                         logg_star         = data_star['log_g'][-1]
                         mass_star         = data_star['star_mass'][-1]
@@ -118,11 +119,11 @@ def run_mesa(run_com,history_file):
                         outputs['omega_crit']    = {'value':omega_crit}
                         outputs['asymptotic_dp'] = {'value':asymptotic_dp}
                         outputs['mass_cc']       = {'value':mass_cc}
-                        
+
                         return outputs
                 else:
                         return None
-        
+
 
 
 
@@ -174,6 +175,3 @@ def write_bookkeeper(filename,adjpars,outpars,lnlklhd,frange=10):
                 bookline += '\n'
                 ftemp.write(bookline)
         print 'Book-Keeper Updated'
-        
-        
-        
