@@ -11,13 +11,13 @@ def corot_to_inertial(f_c,f_rot,azimuthal_order):
 
 
 def write_gyre_in( gyre_in_file, mesa_pulsation_file, gyre_out_file,
-                   freq_min_inertial=-1.0, freq_max_inertial=-1.0, 
-                   npg_min=-90,npg_max=-10, omega_rot=-1.0, azimuthal_order=1,
+                   freq_min_inertial=-1.0, freq_max_inertial=-1.0,
+                   npg_min=-120,npg_max=-5, omega_rot=-1.0, degrees=[1], azimuthal_orders=[1],
                    gyre_base_file = os.path.expandvars('$VSC_DATA/python/mesa/GYRE_MAMSIE_BASE')
                   ):
 
-        freq_min_corot = freq_min_inertial - azimuthal_order * omega_rot
-        freq_max_corot = freq_max_inertial - azimuthal_order * omega_rot
+        freq_min_corot = freq_min_inertial - azimuthal_orders[0] * omega_rot
+        freq_max_corot = freq_max_inertial - azimuthal_orders[0] * omega_rot
 
         with open(gyre_base_file, 'r') as f:
                 lines = f.readlines()
@@ -38,7 +38,7 @@ def write_gyre_in( gyre_in_file, mesa_pulsation_file, gyre_out_file,
                         if (replacements[key] != ''):
                                 new_line = new_line.replace(key, replacements[key])
                 new_lines.append(new_line)
-    
+
         with open(gyre_in_file, 'w') as f:
                 f.writelines(new_lines)
         return
@@ -67,7 +67,7 @@ def run_gyre(gyre_in_file, gyre_out_file ):
                 except:
                         print 'Gyre Proc alrady terminated'
 
-        
+
         ## Read frequencies, n_pgs and translate back to inertial frame
         gyre_data      = np.genfromtxt(gyre_out_file,skip_header=5,names=True)
         freqs_inertial = gyre_data['Refreq']
@@ -79,7 +79,7 @@ def run_gyre(gyre_in_file, gyre_out_file ):
 def generate_obs_series(periods,errors):
         observed_spacings        = []
         observed_spacings_errors = []
-        
+
         for kk,prd_k in enumerate(periods[:-1]):
                 prd_k_p_1 = periods[kk+1]
                 observed_spacings.append( abs( prd_k - prd_k_p_1 )*86400. )
@@ -87,9 +87,9 @@ def generate_obs_series(periods,errors):
         return observed_spacings,observed_spacings_errors
 
 def generate_thry_series(periods):
-        
+
         theoretical_spacings = []
-        
+
         for kk,prd_k in enumerate(periods[:-1]):
                 prd_k_p_1 = periods[kk+1]
                 theoretical_spacings.append( abs(prd_k-prd_k_p_1)*86400. )
@@ -153,7 +153,7 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 
                 chisqs = np.array([ ( (period-tperiod)/operiods_errors[ii] )**2 for tperiod in tperiods  ])
 
-		## Locate the theoretical frequency (and accompanying order) with the best chi2 
+		## Locate the theoretical frequency (and accompanying order) with the best chi2
                 min_ind = np.where( chisqs == min( chisqs ) )[0]
                 best_match = tperiods[min_ind][0]
                 best_order = orders[min_ind][0]
@@ -176,7 +176,7 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 
 
 	sequences = []
-	## Look through all pairs of obs and theoretical frequencies and 
+	## Look through all pairs of obs and theoretical frequencies and
 	## check if the next obs freqency has a corresponding theoretical frequency
 	## with the consecutive radial order
 	current = []
@@ -280,7 +280,7 @@ def chisq_best_sequence(tperiods,orders,operiods,operiods_errors):
 
                 chisqs = np.array([ ( (period-tperiod)/operiods_errors[ii] )**2 for tperiod in tperiods  ])
 
-		## Locate the theoretical frequency (and accompanying order) with the best chi2 
+		## Locate the theoretical frequency (and accompanying order) with the best chi2
                 min_ind = np.where( chisqs == min( chisqs ) )[0]#[0]
                 best_match = tperiods[min_ind][0]
                 best_order = orders[min_ind][0]
@@ -291,7 +291,7 @@ def chisq_best_sequence(tperiods,orders,operiods,operiods_errors):
 	pairs_orders = np.array(pairs_orders)
 
 	sequences = []
-	## Look through all pairs of obs and theoretical frequencies and 
+	## Look through all pairs of obs and theoretical frequencies and
 	## check if the next obs freqency has a corresponding theoretical frequency
 	## with the consecutive radial order
 	current = []
@@ -395,7 +395,7 @@ def chisq_period_series_pairwise(tperiods,tspacings,orders,operiods,operiod_erro
 			count_lens.append(ncounter)
 			start,stop = stop,ii+1
 			ncounter   = 0
-			
+
 	start_stops.append((start,stop))
 	count_lens.append(ncounter)
 
