@@ -1,4 +1,4 @@
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import os,logging
 import read_mesa as rm
@@ -42,7 +42,6 @@ def write_gyre_in( gyre_in_file, mesa_pulsation_file, gyre_out_file,
         with open(gyre_in_file, 'w') as f:
                 f.writelines(new_lines)
         return
-
 
 
 def run_gyre(gyre_in_file, gyre_out_file ):
@@ -125,6 +124,7 @@ def chisq_period_series_interp(tperiods,tspacings,operiods,ospacings,ospacing_er
 
     return np.sum(chi), interp
 
+
 def chisq_experimental(tperiods,tspacings,orders,operiods,operiod_errors,ospacings,ospacing_errors):
 
 	chisqs = []
@@ -138,7 +138,6 @@ def chisq_experimental(tperiods,tspacings,orders,operiods,operiod_errors,ospacin
 		ind = np.where(chisqs[ii]==min(chisqs[ii]))[0]
 		#print ind
 		print 'Obs/Thr/chi2/order: %f\t%f\t%f\t%i'%(per,tperiods[ind],chisqs[ii][ind],orders[ind])
-
 
 
 def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
@@ -193,7 +192,6 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 	len_list = np.array([len(x) for x in sequences])
 	longest = np.where(len_list == max(len_list))[0] #[0]
 
-
 	## Test if there really is one longest sequence
 	if len(longest) == 1:
 		lseq = sequences[longest[0]]
@@ -203,9 +201,6 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 		scores = [ np.sum(sequences[ii][:,-1])/len(sequences[ii]) for  ii in longest]
 		min_score = np.where(scores == min(scores))[0][0]
 		lseq = sequences[longest[min_score]]
-
-
-
 
 	obs_ordering_ind = np.where(operiods == lseq[:,0][0])[0][0]
 	thr_ordering_ind = np.where(tperiods == lseq[:,1][0])[0][0]
@@ -230,8 +225,6 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 		ordered_theoretical_periods.append(tper)
 		corresponding_orders.append(order)
 
-
-
 	#final_theoretical_periods = np.sort(np.hstack([ordered_theoretical_periods_a,ordered_theoretical_periods_b]))[::-1]
 	final_theoretical_periods = np.array(ordered_theoretical_periods)
 
@@ -242,30 +235,147 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 	obs_series_errors = np.array(obs_series_errors)
 	thr_series        = np.array(thr_series)
 
-	#series_chi2 = np.sum( (obs_series-thr_series)**2 /obs_series_errors**2 ) / len(obs_series)
-        print 'orders: %i - %i'%(corresponding_orders[0],corresponding_orders[-1])
+	series_chi2 = np.sum( (obs_series-thr_series)**2 /obs_series_errors**2 ) / len(obs_series)
+    # print 'orders: %i - %i'%(corresponding_orders[0],corresponding_orders[-1])
 
+	fig = plt.figure(1,figsize=(6.6957,6.6957))
+	fig.suptitle('$\mathrm{Longest \\ Sequence}$',fontsize=20)
+	axT = fig.add_subplot(211)
+	axT.errorbar(operiods[1:],obs_series,yerr=obs_series_errors,marker='x',color='black',label='Obs')
+	axT.plot(final_theoretical_periods[1:],thr_series,'rx-',label='Theory')
+	axT.set_ylabel('$\mathrm{Period \\ Spacing \\ (s)}$',fontsize=20)
+	axT.legend(loc='best')
+	axB = fig.add_subplot(212)
+	axB.errorbar(operiods[1:],obs_series-thr_series,yerr=obs_series_errors,marker='',color='black')
+	axB.set_ylabel('$\mathrm{Residuals \\ (s)}$',fontsize=20)
+	axB.set_xlabel('$\mathrm{Period \\ (d^{-1})}$',fontsize=20)
+	axB.text(0.75,0.85,'$\chi^2 = %.2f$'%series_chi2,fontsize=15,transform=axB.transAxes)
 
-	#fig = plt.figure(1,figsize=(6.6957,6.6957))
-	#fig.suptitle('$\mathrm{Longest \\ Sequence}$',fontsize=20)
-	#axT = fig.add_subplot(211)
-	#axT.errorbar(operiods[1:],obs_series,yerr=obs_series_errors,marker='x',color='black',label='Obs')
-	#axT.plot(final_theoretical_periods[1:],thr_series,'rx-',label='Theory')
-	#axT.set_ylabel('$\mathrm{Period \\ Spacing \\ (s)}$',fontsize=20)
-	#axT.legend(loc='best')
-	#axB = fig.add_subplot(212)
-	#axB.errorbar(operiods[1:],obs_series-thr_series,yerr=obs_series_errors,marker='',color='black')
-	#axB.set_ylabel('$\mathrm{Residuals \\ (s)}$',fontsize=20)
-	#axB.set_xlabel('$\mathrm{Period \\ (d^{-1})}$',fontsize=20)
-	#axB.text(0.75,0.85,'$\chi^2 = %.2f$'%series_chi2,fontsize=15,transform=axB.transAxes)
-
-	#plt.show()
-
-
+	plt.show()
 
 	series_chi2 = np.sum( ( (obs_series-thr_series) /obs_series_errors )**2 ) / len(obs_series)
 	return series_chi2,final_theoretical_periods,corresponding_orders
 
+
+def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
+    if len(tperiods)<len(operiods):
+        return 1e16, [-1. for i in range(len(operiods))], [-1 for i in range(len(operiods))]
+    else:
+        # Generate two series
+        dP,e_dP = generate_obs_series(operiods,operiods_errors)
+        deltaP  = generate_thry_series(tperiods)
+
+        # Find the best matches per observed period
+        pairs_orders = []
+        for ii,period in enumerate(operiods):
+            chisqs = np.array([ ( (period-tperiod)/operiods_errors[ii] )**2 for tperiod in tperiods  ])
+            ## Locate the theoretical frequency (and accompanying order) with the best chi2
+            min_ind = np.where( chisqs == min( chisqs ) )[0]
+            best_match = tperiods[min_ind][0]
+            best_order = orders[min_ind][0]
+
+            ## Toss everything together for bookkeeping
+            pairs_orders.append([period,best_match,int(best_order),chisqs[min_ind]])
+
+        pairs_orders = np.array(pairs_orders)
+
+        plt.figure(1,figsize=(6.6957,6.6957))
+        plt.subplot(211)
+        plt.plot(pairs_orders[:,0],pairs_orders[:,1],'o')
+        plt.ylabel('$\\mathrm{Period \\,[d]}$',fontsize=20)
+        plt.subplot(212)
+        plt.plot(pairs_orders[:,0],pairs_orders[:,2],'o')
+        plt.ylabel('$\\mathrm{Radial \\, Order}$',fontsize=20)
+        plt.xlabel('$\\mathrm{Period \\,[d]}$',fontsize=20)
+
+        # plt.show()
+
+
+        sequences = []
+        ## Look through all pairs of obs and theoretical frequencies and
+        ## check if the next obs freqency has a corresponding theoretical frequency
+        ## with the consecutive radial order
+        current = []
+        lp = len(pairs_orders[:-1])
+        for ii,sett in enumerate(pairs_orders[:-1]):
+                if abs(sett[2]) == abs(pairs_orders[ii+1][2])+1:
+                        current.append(sett)
+                else:
+                       	current.append(sett)
+                        sequences.append(np.array(current).reshape(len(current),4))
+                        current = []
+                if (ii==lp-1):
+                     	current.append(sett)
+                        sequences.append(np.array(current).reshape(len(current),4))
+                        current = []
+        len_list = np.array([len(x) for x in sequences])
+        longest = np.where(len_list == max(len_list))[0] #[0]
+
+        ## Test if there really is one longest sequence
+        if len(longest) == 1:
+            lseq = sequences[longest[0]]
+
+        ## if not, pick, of all the sequences with the same length, the best based on chi2
+        else:
+            scores = [ np.sum(sequences[ii][:,-1])/len(sequences[ii]) for  ii in longest]
+            min_score = np.where(scores == min(scores))[0][0]
+            lseq = sequences[longest[min_score]]
+
+        obs_ordering_ind = np.where(operiods == lseq[:,0][0])[0][0]
+        thr_ordering_ind = np.where(tperiods == lseq[:,1][0])[0][0]
+
+        ordered_theoretical_periods   = []
+        corresponding_orders          = []
+
+        thr_ind_start = thr_ordering_ind - obs_ordering_ind
+        thr_ind_current = thr_ind_start
+
+        for i,oper in enumerate(operiods):
+            thr_ind_current = thr_ind_start + i
+            if (thr_ind_current < 0):
+                tper = -1
+                ordr = -1
+            elif (thr_ind_current >= len(tperiods)):
+                tper = -1
+                ordr = -1
+            else:
+                tper = tperiods[thr_ind_current]
+                ordr = orders[thr_ind_current]
+            ordered_theoretical_periods.append(tper)
+            corresponding_orders.append(ordr)
+
+
+
+        #final_theoretical_periods = np.sort(np.hstack([ordered_theoretical_periods_a,ordered_theoretical_periods_b]))[::-1]
+        final_theoretical_periods = np.array(ordered_theoretical_periods)
+
+        obs_series,obs_series_errors = generate_obs_series(operiods,operiods_errors)
+        thr_series = generate_thry_series(final_theoretical_periods)
+
+        obs_series        = np.array(obs_series)
+        obs_series_errors = np.array(obs_series_errors)
+        thr_series        = np.array(thr_series)
+
+        series_chi2 = np.sum( (obs_series-thr_series)**2 /obs_series_errors**2 ) / len(obs_series)
+        # print 'orders: %i - %i'%(corresponding_orders[0],corresponding_orders[-1])
+
+        fig = plt.figure(2,figsize=(6.6957,6.6957))
+        fig.suptitle('$\mathrm{Longest \\ Sequence}$',fontsize=20)
+        axT = fig.add_subplot(211)
+        axT.errorbar(operiods[1:],obs_series,yerr=obs_series_errors,marker='x',color='black',label='Obs')
+        axT.plot(final_theoretical_periods[1:],thr_series,'rx-',label='Theory')
+        axT.set_ylabel('$\mathrm{Period \\ Spacing \\ (s)}$',fontsize=20)
+        axT.legend(loc='best')
+        axB = fig.add_subplot(212)
+        axB.errorbar(operiods[1:],obs_series-thr_series,yerr=obs_series_errors,marker='',color='black')
+        axB.set_ylabel('$\mathrm{Residuals \\ (s)}$',fontsize=20)
+        axB.set_xlabel('$\mathrm{Period \\ (d^{-1})}$',fontsize=20)
+        axB.text(0.75,0.85,'$\chi^2 = %.2f$'%series_chi2,fontsize=15,transform=axB.transAxes)
+
+        plt.show()
+
+        series_chi2 = np.sum( ( (obs_series-thr_series) /obs_series_errors )**2 ) / len(obs_series)
+        return series_chi2,final_theoretical_periods,corresponding_orders
 
 
 def chisq_best_sequence(tperiods,orders,operiods,operiods_errors):
@@ -360,9 +470,6 @@ def chisq_best_sequence(tperiods,orders,operiods,operiods_errors):
 	plt.show()
 
 	return series_chi2,final_theoretical_periods,corresponding_orders
-
-
-
 
 
 def chisq_period_series_pairwise(tperiods,tspacings,orders,operiods,operiod_errors,ospacings,ospacing_errors):
