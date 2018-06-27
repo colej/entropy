@@ -231,8 +231,8 @@ def construct_isochrones(tracks,i_ages,savename):
                 zipped = zip(eep_ages,eep_masses)
                 zipped.sort(key=lambda x:x[0])
                 sorted_eep_ages,sorted_eep_masses = zip(*zipped)
-                # i_age_func     = interp1d( eep_ages, eep_masses, kind='cubic' )
-                i_age_func = PchipInterpolator(sorted_eep_ages, sorted_eep_masses, extrapolate=False)
+                i_age_func     = interp1d( eep_ages, eep_masses, kind='slinear' )
+                # i_age_func = PchipInterpolator(sorted_eep_ages, sorted_eep_masses, extrapolate=False)
                 mass0      = i_age_func(i_age)
                 mass0s.append(mass0)
 
@@ -241,8 +241,8 @@ def construct_isochrones(tracks,i_ages,savename):
                     zipped = zip(eep_masses, cval)
                     zipped.sort(key=lambda x:x[0])
                     sorted_eep_masses, sorted_cval = zip(*zipped)
-                    i_func = PchipInterpolator(sorted_eep_masses, sorted_cval, extrapolate=False)
-                    # i_func = interp1d( eep_masses, cval, kind='cubic' )
+                    # i_func = PchipInterpolator(sorted_eep_masses, sorted_cval, extrapolate=False)
+                    i_func = interp1d( eep_masses, cval, kind='slinear' )
                     isochrones['age-%s'%cc][key].append( i_func( mass0 ) )
 
         #         plt.figure(1)
@@ -269,9 +269,8 @@ def construct_isochrones(tracks,i_ages,savename):
         header = '# AGE[Myr]  %s'%' '.join( [ '%s'%key for key in keys ] )
         fout.write(header+'\n')
         for cc,i_age in enumerate(i_ages):
-            print 'Writing %.1f isochrone to file'%(i_age/1e6)
             for n in range(len(isochrones['age-%i'%cc]['star_mass'])):
-                # print n,'/',len(isochrones['age-%i'%cc]['star_mass'])
+                print n,'/',len(isochrones['age-%i'%cc]['star_mass'])
                 fout.write( '%f %s \n'%(i_age,' '.join( [ '%.8f'%isochrones['age-%i'%cc][key][n] for key in keys] )) )
 
 
