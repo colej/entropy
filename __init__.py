@@ -1,1 +1,1 @@
-__all__=["mesa","mcmc","binary","general"]
+__all__=["mesa","mcmc","binary","general","stats"]
