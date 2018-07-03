@@ -76,46 +76,23 @@ def run_gyre(gyre_in_file, gyre_out_file ):
 
 
 def generate_obs_series(periods,errors):
-        observed_spacings        = []
-        observed_spacings_errors = []
-
-        for kk,prd_k in enumerate(periods[:-1]):
-                prd_k_p_1 = periods[kk+1]
-                observed_spacings.append( abs( prd_k - prd_k_p_1 )*86400. )
-                observed_spacings_errors.append(np.sqrt( errors[kk]**2 + errors[kk+1]**2  )*86400.)
-        return observed_spacings,observed_spacings_errors
-
-def generate_thry_series(periods):
-
-        theoretical_spacings = []
-
-        for kk,prd_k in enumerate(periods[:-1]):
-                prd_k_p_1 = periods[kk+1]
-                theoretical_spacings.append( abs(prd_k-prd_k_p_1)*86400. )
-        return theoretical_spacings
-
-
-def generate_series(gyre_out, periods,errors):
-    # read frequencies, compare to provided frequencies, return chi2
-
-    gyre_data                = read_gyre_summary(gyre_out)
-    theoretical_freqs        = np.sort(abs(gyre_data[1]))
-    #theoretical_freqs        = abs(gyre_data[1])
-    theoretical_spacings     = []
     observed_spacings        = []
     observed_spacings_errors = []
 
     for kk,prd_k in enumerate(periods[:-1]):
-        prd_k_m_1      = periods[kk+1]
-        observed_spacings.append( abs(prd_k - prd_k_m_1) * 86400. ) #in seconds
+        prd_k_p_1 = periods[kk+1]
+        observed_spacings.append( abs( prd_k - prd_k_p_1 )*86400. )
         observed_spacings_errors.append(np.sqrt( errors[kk]**2 + errors[kk+1]**2  )*86400.)
+    return observed_spacings,observed_spacings_errors
 
-    for kk,freq in enumerate(theoretical_freqs[:-1]):
-        tprd_k     = 1./theoretical_freqs[kk+1]
-        tprd_k_m_1 = 1./freq
-        theoretical_spacings.append( abs(tprd_k - tprd_k_m_1) * 86400. )
+def generate_thry_series(periods):
 
-    return observed_spacings,observed_spacings_errors,periods,theoretical_spacings,1./np.array(theoretical_freqs)
+    theoretical_spacings = []
+
+    for kk,prd_k in enumerate(periods[:-1]):
+        prd_k_p_1 = periods[kk+1]
+        theoretical_spacings.append( abs(prd_k-prd_k_p_1)*86400. )
+    return theoretical_spacings
 
 
 def chisq_period_series_interp(tperiods,tspacings,operiods,ospacings,ospacing_errors):
@@ -140,7 +117,7 @@ def chisq_experimental(tperiods,tspacings,orders,operiods,operiod_errors,ospacin
 		print 'Obs/Thr/chi2/order: %f\t%f\t%f\t%i'%(per,tperiods[ind],chisqs[ii][ind],orders[ind])
 
 
-def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
+def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
 
         # Generate two series
         dP,e_dP = generate_obs_series(operiods,operiods_errors)
@@ -257,7 +234,7 @@ def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
 	return series_chi2,final_theoretical_periods,corresponding_orders
 
 
-def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
+def chisq_longest_sequence(tperiods,orders,operiods,operiods_errors):
     if len(tperiods)<len(operiods):
         return 1e16, [-1. for i in range(len(operiods))], [-1 for i in range(len(operiods))]
     else:
@@ -269,6 +246,7 @@ def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
         pairs_orders = []
         for ii,period in enumerate(operiods):
             chisqs = np.array([ ( (period-tperiod)/operiods_errors[ii] )**2 for tperiod in tperiods  ])
+
             ## Locate the theoretical frequency (and accompanying order) with the best chi2
             min_ind = np.where( chisqs == min( chisqs ) )[0]
             best_match = tperiods[min_ind][0]
@@ -344,8 +322,6 @@ def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
             ordered_theoretical_periods.append(tper)
             corresponding_orders.append(ordr)
 
-
-
         #final_theoretical_periods = np.sort(np.hstack([ordered_theoretical_periods_a,ordered_theoretical_periods_b]))[::-1]
         final_theoretical_periods = np.array(ordered_theoretical_periods)
 
@@ -362,8 +338,10 @@ def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
         fig = plt.figure(2,figsize=(6.6957,6.6957))
         fig.suptitle('$\mathrm{Longest \\ Sequence}$',fontsize=20)
         axT = fig.add_subplot(211)
-        axT.errorbar(operiods[1:],obs_series,yerr=obs_series_errors,marker='x',color='black',label='Obs')
-        axT.plot(final_theoretical_periods[1:],thr_series,'rx-',label='Theory')
+        # axT.errorbar(operiods[1:],obs_series,yerr=obs_series_errors,marker='x',color='black',label='Obs')
+        # axT.plot(final_theoretical_periods[1:],thr_series,'rx-',label='Theory')
+        axT.errorbar(range(len(obs_series)),obs_series,yerr=obs_series_errors,marker='x',color='black',label='Obs')
+        axT.plot(range(len(thr_series)),thr_series,'rx-',label='Theory')
         axT.set_ylabel('$\mathrm{Period \\ Spacing \\ (s)}$',fontsize=20)
         axT.legend(loc='best')
         axB = fig.add_subplot(212)
@@ -373,6 +351,9 @@ def chisq_longest_sequence_SAVE(tperiods,orders,operiods,operiods_errors):
         axB.text(0.75,0.85,'$\chi^2 = %.2f$'%series_chi2,fontsize=15,transform=axB.transAxes)
 
         plt.show()
+
+        for ii,oper in enumerate(operiods):
+            print oper, final_theoretical_periods[ii], corresponding_orders[ii]
 
         series_chi2 = np.sum( ( (obs_series-thr_series) /obs_series_errors )**2 ) / len(obs_series)
         return series_chi2,final_theoretical_periods,corresponding_orders
