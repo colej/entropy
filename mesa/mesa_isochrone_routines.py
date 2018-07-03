@@ -30,8 +30,12 @@ def generate_primary_eeps(track):
     ## ZAMS EEP
     # zams_     = np.where( ((track['log_Lnuc']/track['log_L'] > 0.999)  &
     #                       (track['center_h1'][0]-track['center_h1'] < 0.0015)) )[0][0]
+
+    # zams_     = np.where( ((track['log_Lnuc']/track['log_L'] > 0.9999)  &
+    #                       (track['center_h1'][0]-track['center_h1'] < 0.0015) &
+    #                       (np.max(track['log_g'])-track['log_g'] < 0.01 )) )[0][0]
     zams_     = np.where( ((track['log_Lnuc']/track['log_L'] > 0.9999)  &
-                          (track['center_h1'][0]-track['center_h1'] < 0.0015) &
+                          (track['center_h1'][0]-track['center_h1'] < 0.005) &
                           (np.max(track['log_g'])-track['log_g'] < 0.01 )) )[0][0]
     ## IAMS EEP
     iams_     = np.where( track['center_h1'] < 0.3 )[0][0]
