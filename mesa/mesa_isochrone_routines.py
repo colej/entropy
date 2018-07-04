@@ -24,7 +24,7 @@ def distance_function(xj,wj,npoints):
 
 def generate_primary_eeps(track):
 
-    m0 = track["star_mass"]
+    m0 = track["star_mass"][0]
     tags = []
     ## Pre-MS EEP
     pms_     = np.where( track['log_center_T'] > 5.0 )[0][0]
@@ -42,7 +42,7 @@ def generate_primary_eeps(track):
                               (np.max(track['log_g'])-track['log_g'] < 0.01 )) )[0][0]
     # zams_     = np.where( ((track['log_Lnuc']/track['log_L'] > 0.999)  &
     #                       (track['center_h1'][0]-track['center_h1'] < 0.0015)) )[0][0]
-    ## IAMS EEP    
+    ## IAMS EEP
     iams_     = np.where( track['center_h1'] < 0.3 )[0][0]
 
     ## TAMS EEP
