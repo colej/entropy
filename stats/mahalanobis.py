@@ -52,7 +52,8 @@ def MahalanobisDistance(YObs,EpsObs,Thetas,YTheo,YOther):
     return np.concatenate((np.matrix(MD[idx2]).T,Thetas[idx2,:],YTheoMat[:,idx2].T,YOtherMat[:,idx2].T),axis=1)
 
 
-def MahalanobisDistanceBinary(YObsArr,EpsObsArr,Thetas,YTheo,YOther):
+
+def MahalanobisDistanceEB(YObsArr,EpsObsArr,Thetas,YTheo,YOther):
     #-> Original Author: May Gade Pedersen
     #-> Updated: Cole Johnston 2018-06-27
 

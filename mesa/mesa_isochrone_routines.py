@@ -156,6 +156,7 @@ def construct_eep(track,npoints=100,keys=None):
 
     return eep_track
 
+
 def write_eep(eep,savename):
     ## Function to write eep to file
     with open(savename,'w') as fout:
@@ -173,6 +174,7 @@ def write_eep(eep,savename):
             line += '\n'
             fout.write(line)
     return
+
 
 def interpolate_mass_tracks(tracks, masses, i_masses):
     keys = tracks[0].keys()
@@ -208,21 +210,26 @@ def construct_isochrones(tracks,i_ages,savename):
     #            'surface_h1','surface_he3','surface_he4','surface_c12','surface_n14',
     #            'Omega_crit','Asymptotic_dP','core_mass_custom','k2_stellar_harmonic'
     #            ]
+
+    #-> Quantities that we will include in our isochrones
     keys    = ['star_age','star_mass','log_L','log_R','log_Teff','log_g',
                'log_cntr_T','log_cntr_Rho','log_cntr_P',
-               'center_h1','center_he4',
-               'surface_c12',
+               'center_h1','center_he4','surface_c12','mass_conv_core',
                'Omega_crit','Asymptotic_dP','core_mass_custom','k2_stellar_harmonic'
                ]
 
+    #-> create a dictionary where each age is a dictionary for all quantities listed above
     isochrones = { 'age-%i'%cc: { key: [] for key in keys } for cc,i_age in enumerate(i_ages) }
+
+    #-> Loop through all ages and create the isochrone for that age
     for cc,i_age in enumerate(i_ages):
+
         print 'ISOCHRONE FOR: ',i_age/1e6,' Myrs'
         mass0s = []
-        #for n_eep in range(20,npoints-10):
+        #-> Loop over each track at the same EEP to generate an isochrone
         for n_eep in range(npoints):
 
-            eep_subsample = { key: [] for key in keys }
+            eep_subsample = { key: [] for key in keys[1:] }
 
             for ii,track in enumerate(tracks):
                 #plt.plot(track['log_Teff'],track['log_g'],'k-')
@@ -232,26 +239,23 @@ def construct_isochrones(tracks,i_ages,savename):
             eep_masses = np.array( eep_subsample['star_mass'] )
             eep_ages   = np.array( eep_subsample['star_age' ] )
 
-            # eep_ages = smooth(eep_ages,7,'hanning')
-
 
             if ( ( min(eep_ages) < i_age < max(eep_ages) ) & (len(eep_masses) > 3) ) :
 
                 zipped = zip(eep_ages,eep_masses)
                 zipped.sort(key=lambda x:x[0])
                 sorted_eep_ages,sorted_eep_masses = zip(*zipped)
-                i_age_func     = interp1d( eep_ages, eep_masses, kind='slinear' )
-                # i_age_func = PchipInterpolator(sorted_eep_ages, sorted_eep_masses, extrapolate=False)
+                # i_age_func     = interp1d( eep_ages, eep_masses, kind='slinear' )
+                i_age_func = PchipInterpolator(sorted_eep_ages, sorted_eep_masses, extrapolate=False)
                 mass0      = i_age_func(i_age)
                 mass0s.append(mass0)
 
-                for key in keys:
+                for key in keys[1:]:
                     cval   = np.array(eep_subsample[key])
                     zipped = zip(eep_masses, cval)
                     zipped.sort(key=lambda x:x[0])
                     sorted_eep_masses, sorted_cval = zip(*zipped)
-                    # i_func = PchipInterpolator(sorted_eep_masses, sorted_cval, extrapolate=False)
-                    i_func = interp1d( eep_masses, cval, kind='slinear' )
+                    i_func = PchipInterpolator(sorted_eep_masses, sorted_cval, extrapolate=False)
                     isochrones['age-%s'%cc][key].append( i_func( mass0 ) )
 
         #         plt.figure(1)
@@ -265,7 +269,7 @@ def construct_isochrones(tracks,i_ages,savename):
                 # plt.plot(isochrones['age-%i'%cc]['log_Teff'],isochrones['age-%i'%cc]['log_g'],'k-',alpha=0.7)
 
     for cc,i_age in enumerate(i_ages):
-        for key in keys:
+        for key in keys[1:]:
             isochrones['age-%i'%cc][key] = np.hstack(isochrones['age-%i'%cc][key])
 
     # plt.figure(2)
@@ -275,7 +279,7 @@ def construct_isochrones(tracks,i_ages,savename):
     # plt.show()
 
     with open(savename,'w') as fout:
-        header = '# AGE[Myr]  %s'%' '.join( [ '%s'%key for key in keys ] )
+        header = '# AGE[Myr]  %s'%' '.join( [ '%s'%key for key in keys[1:] ] )
         fout.write(header+'\n')
         for cc,i_age in enumerate(i_ages):
             for n in range(len(isochrones['age-%i'%cc]['star_mass'])):
