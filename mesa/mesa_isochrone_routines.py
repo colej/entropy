@@ -219,7 +219,7 @@ def construct_isochrones(tracks,i_ages,savename):
                ]
 
     #-> create a dictionary where each age is a dictionary for all quantities listed above
-    isochrones = { 'age-%i'%cc: { key: [] for key in keys } for cc,i_age in enumerate(i_ages) }
+    isochrones = { 'age-%i'%cc: { key: [] for key in keys[:1] } for cc,i_age in enumerate(i_ages) }
 
     #-> Loop through all ages and create the isochrone for that age
     for cc,i_age in enumerate(i_ages):
