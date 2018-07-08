@@ -38,6 +38,8 @@ def MahalanobisDistance(YObs,EpsObs,Thetas,YTheo,YOther):
 
     # Include observational errors in the variance-covariance matrix
     V = V + np.diag(EpsObs**2.)
+    print V
+
 
     # Calculate Mahalanobis distances
     MD = np.zeros(q)

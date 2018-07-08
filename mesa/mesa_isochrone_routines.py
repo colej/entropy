@@ -229,7 +229,7 @@ def construct_isochrones(tracks,i_ages,savename):
         #-> Loop over each track at the same EEP to generate an isochrone
         for n_eep in range(npoints):
 
-            eep_subsample = { key: [] for key in keys[1:] }
+            eep_subsample = { key: [] for key in keys }
 
             for ii,track in enumerate(tracks):
                 #plt.plot(track['log_Teff'],track['log_g'],'k-')
@@ -250,7 +250,7 @@ def construct_isochrones(tracks,i_ages,savename):
                 mass0      = i_age_func(i_age)
                 mass0s.append(mass0)
 
-                for key in keys[1:]:
+                for key in keys:
                     cval   = np.array(eep_subsample[key])
                     zipped = zip(eep_masses, cval)
                     zipped.sort(key=lambda x:x[0])
@@ -269,7 +269,7 @@ def construct_isochrones(tracks,i_ages,savename):
                 # plt.plot(isochrones['age-%i'%cc]['log_Teff'],isochrones['age-%i'%cc]['log_g'],'k-',alpha=0.7)
 
     for cc,i_age in enumerate(i_ages):
-        for key in keys[1:]:
+        for key in keys:
             isochrones['age-%i'%cc][key] = np.hstack(isochrones['age-%i'%cc][key])
 
     # plt.figure(2)
@@ -279,7 +279,7 @@ def construct_isochrones(tracks,i_ages,savename):
     # plt.show()
 
     with open(savename,'w') as fout:
-        header = '# AGE[Myr]  %s'%' '.join( [ '%s'%key for key in keys[1:] ] )
+        header = '# AGE[Myr]  %s'%' '.join( [ '%s'%key for key in keys ] )
         fout.write(header+'\n')
         for cc,i_age in enumerate(i_ages):
             for n in range(len(isochrones['age-%i'%cc]['star_mass'])):
