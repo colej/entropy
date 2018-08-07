@@ -273,7 +273,6 @@ def construct_isochrones(tracks,i_ages,savename):
             isochrones['age-%i'%cc][key] = np.hstack(isochrones['age-%i'%cc][key])
 
     # plt.figure(2)
-    # plt.xlim(plt.xlim()[::-1])
     # plt.ylim(plt.ylim()[::-1])
     #
     # plt.show()
