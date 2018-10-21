@@ -17,6 +17,7 @@ def MahalanobisDistance(YObs,EpsObs,Thetas,YTheo,YOther):
 
     # Determine number of grid points
     q = np.shape(Thetas)[0]
+    print "N grid points --> ",q
 
     # Convert to matrix format
     YObsMat = np.matrix(YObs).T
@@ -26,6 +27,8 @@ def MahalanobisDistance(YObs,EpsObs,Thetas,YTheo,YOther):
     # Calculate the average on the theoretical values (e.g. frequencies)
     # over the entire grid. Returns a vector of dimension N x 1
     Yav = YTheoMat.mean(1)
+    print "Average Values -->"
+    print Yav
 
     # Calculate the variance-covriance matrix
     N = len(YObs)
@@ -38,7 +41,6 @@ def MahalanobisDistance(YObs,EpsObs,Thetas,YTheo,YOther):
 
     # Include observational errors in the variance-covariance matrix
     V = V + np.diag(EpsObs**2.)
-    print V
 
 
     # Calculate Mahalanobis distances

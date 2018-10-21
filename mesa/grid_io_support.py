@@ -15,8 +15,8 @@ def get_adjpars_grid(file,delimeter=' '):
             vals = line.split(delimeter)
             par = vals[0]
             vals = vals[1:]
-            adjpars[par.strip()]={'values': sp.arange(float(vals[0]),float(vals[1]),float(vals[2]),dtype=np.float64), 
-                                  'multiplier':int(vals[3]), 'zfill':int(vals[4]), 
+            adjpars[par.strip()]={'values': sp.arange(float(vals[0]),float(vals[1]),float(vals[2]),dtype=np.float64),
+                                  'multiplier':int(vals[3]), 'zfill':int(vals[4]),
                                   'index':int(vals[5]), 'ftype':vals[6] }
 
     return adjpars
@@ -112,22 +112,22 @@ def make_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=None, g
             print '%smodels EXISTS'%dir_name
 
         '''
-        try: 
+        try:
             os.system('mkdir -p %shistories'%dir_name)
         except:
             print 'DIR: %shistories already exists'%dir_name
         ## Make profiles dir
-        try: 
+        try:
             os.system('mkdir -p %sprofiles'%dir_name)
         except:
             print 'DIR: %sprofiles already exists'%dir_name
         ## Make frequencies dir
-        try: 
+        try:
             os.system('mkdir -p %sfrequencies'%dir_name)
         except:
             print 'DIR: %sfrequencies already exists'%dir_name
         ## Make tams_models dir
-        try: 
+        try:
             os.system('mkdir -p %stams_models'%dir_name)
         except:
             print 'DIR: %stams_models already exists'%dir_name
@@ -153,7 +153,7 @@ def make_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=None, g
 	worker_line = '%s,%s,%s\n'%(inlist_name,dir_name,point_name)
         worker_file_open = open(worker_name,'a')
         worker_file_open.write(worker_line)
-        worker_file_open.close()        
+        worker_file_open.close()
 
         inlist_array.append(inlist_name)
         history_array.append(history_name)
@@ -164,7 +164,7 @@ def make_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=None, g
     return logdirs_array,inlist_array,history_array,combinations_array,point_name_array
 
 
-def write_mesa_inlist_vsc_grid(  inlist, history_file, logsdir, 
+def write_mesa_inlist_vsc_grid(  inlist, history_file, logsdir,
                                  initial_Y, initial_Z, initial_mass,
                                  overshoot_f, mlt_alpha, log_minDmix,
                                  xctrl_1 = 0.705, xctrl_2 = 0.9975,
@@ -185,6 +185,45 @@ def write_mesa_inlist_vsc_grid(  inlist, history_file, logsdir,
                 'MIXING_LENGTH_ALPHA'           : '{:5.4f}d0'.format(mlt_alpha),
                 'MIN_D_MIX'                     : '{:8.4f}d0'.format(10**log_minDmix),
                 'X_CTRL_1'                      : '{:5.4f}d0'.format(xctrl_1),
+                'X_CTRL_2'                      : '{:5.4f}d0'.format(xctrl_2),
+                        }
+
+        new_lines = []
+        for line in lines:
+                new_line = line
+                for key in replacements:
+                        if (replacements[key] != ''):
+                                new_line = new_line.replace(key, replacements[key])
+                new_lines.append(new_line)
+
+        with open(inlist, 'w') as f:
+                f.writelines(new_lines)
+        return
+
+def write_mesa_inlist_zams(  inlist, history_file, logsdir,
+                                 initial_Y, initial_Z, initial_mass,
+                                 mlt_alpha, log_minDmix,
+                                 zams_model_file = 'zams.model',
+                                 zams_profile_file = 'zams.profile',
+                                 zams_pulse_file = 'zams.pulse',
+                                 base_inlist=os.path.expandvars('$VSC_DATA/python/mesa/inlist_MAMSIE_BASE_VSCGRID')):
+
+        print 'WRITING INLIST: {}'.format(inlist)
+        with open(base_inlist, 'r') as f:
+                lines = f.readlines()
+        replacements = {
+		        'ZAMS_MODEL_FILENAME'           : '{}'.format("'"+zams_model_file+"'"),
+		        'ZAMS_PROFILE_FILENAME'         : '{}'.format("'"+zams_profile_file+"'"),
+		        'ZAMS_PULSE_FILENAME'           : '{}'.format("'"+zams_pulse_file+"'"),
+                'STAR_HISTORY_NAME'             : '{}'.format("'"+history_file+"'"),
+                'LOGS_DIR'                      : '{}'.format("'"+logsdir+"'"),
+                'INITIAL_Y'                     : '{:6.5f}d0'.format(initial_Y),
+                'INITIAL_Z'                     : '{:6.5f}d0'.format(initial_Z),
+                'INITIAL_MASS'                  : '{:8.6f}d0'.format(initial_mass),
+                'OVERSHOOT_F_ABOVE_BURN_H_CORE' : '{:5.4f}d0'.format(overshoot_f),
+                'MIXING_LENGTH_ALPHA'           : '{:5.4f}d0'.format(mlt_alpha),
+                'MIN_D_MIX'                     : '{:8.4f}d0'.format(10**log_minDmix),
+                'D_EXT'                         : '{:5.4f}d0'.format(10**xctrl_1),
                 'X_CTRL_2'                      : '{:5.4f}d0'.format(xctrl_2),
                         }
 
