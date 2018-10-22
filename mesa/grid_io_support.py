@@ -145,8 +145,11 @@ def make_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=None, g
         history_name  = history_name.strip('_')
         history_name  = 'histories/' + history_name + '.history'
 
-        line =  '%s\t%s\t%s %.5f %.5f %.5f %.5f %.5f\n'%(dir_name,inlist_name,point_name,list_tmp[ii][0],
-                                                   list_tmp[ii][1],list_tmp[ii][2],list_tmp[ii][3],list_tmp[ii][4])
+        # line =  '%s\t%s\t%s %.5f %.5f %.5f %.5f %.5f\n'%(dir_name,inlist_name,point_name,list_tmp[ii][0],
+        #                                            list_tmp[ii][1],list_tmp[ii][2],list_tmp[ii][3],list_tmp[ii][4])
+        list_str = ' '.join(['%.5f'%ll for ll in list_tmp[ii]])
+        line =  '%s\t%s\t%s %s\n'%(dir_name,inlist_name,point_name,list_str)
+        print line
 
         summary_file_open.write(line)
 
@@ -202,7 +205,7 @@ def write_mesa_inlist_vsc_grid(  inlist, history_file, logsdir,
 
 def write_mesa_inlist_zams(  inlist, history_file, logsdir,
                                  initial_Y, initial_Z, initial_mass,
-                                 mlt_alpha, log_minDmix,
+                                 mlt_alpha, log_minDmix, log_Dext,
                                  zams_model_file = 'zams.model',
                                  zams_profile_file = 'zams.profile',
                                  zams_pulse_file = 'zams.pulse',
@@ -220,11 +223,9 @@ def write_mesa_inlist_zams(  inlist, history_file, logsdir,
                 'INITIAL_Y'                     : '{:6.5f}d0'.format(initial_Y),
                 'INITIAL_Z'                     : '{:6.5f}d0'.format(initial_Z),
                 'INITIAL_MASS'                  : '{:8.6f}d0'.format(initial_mass),
-                'OVERSHOOT_F_ABOVE_BURN_H_CORE' : '{:5.4f}d0'.format(overshoot_f),
                 'MIXING_LENGTH_ALPHA'           : '{:5.4f}d0'.format(mlt_alpha),
                 'MIN_D_MIX'                     : '{:8.4f}d0'.format(10**log_minDmix),
-                'D_EXT'                         : '{:5.4f}d0'.format(10**xctrl_1),
-                'X_CTRL_2'                      : '{:5.4f}d0'.format(xctrl_2),
+                'D_EXT'                         : '{:5.4f}d0'.format(10**log_Dext),
                         }
 
         new_lines = []

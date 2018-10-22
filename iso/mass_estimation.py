@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, PchipInterpolator
 
 def load_track(file,skip_header=0,type='ascii'):
     ## load starevol tracks
@@ -34,7 +34,8 @@ def interpolate_on_age(track,delta_t,keys=["M","logL","logTeff","logR","logroeff
     ## and use to populate new interpolated track
     i_track = { key: [] for key in keys }
     for key in keys:
-        ifunc = interp1d(age, track[key], kind=kind)(i_ages)
+        # ifunc = interp1d(age, track[key], kind=kind)(i_ages)
+        ifunc = PchipInterpolator(age, track[key], extrapolate=False)(i_ages)
         i_track[key] = ifunc
 
     return i_track
