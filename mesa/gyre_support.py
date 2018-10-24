@@ -85,6 +85,7 @@ def generate_obs_series(periods,errors):
         observed_spacings_errors.append(np.sqrt( errors[kk]**2 + errors[kk+1]**2  )*86400.)
     return observed_spacings,observed_spacings_errors
 
+
 def generate_thry_series(periods):
 
     theoretical_spacings = []
