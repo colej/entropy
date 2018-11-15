@@ -16,7 +16,7 @@ def time_to_ph(time, period=None, t0=None):
 
     if t0 > 2400000:
         t0 -= 2400000.
-    if time[0] > 2400000.
+    if time[0] > 2400000:
         time = np.array( [t-2400000. for t in time] )
     ph = np.array( [ -0.5+( ( t-t0-0.5*period ) % period ) / period for t in time ] )
     return ph
@@ -53,4 +53,3 @@ def calc_sup_conj_phase(omega,eps):
     phase_periast  = phase_sup_conj - 0.5*mean_anomoly/np.pi
 
     return phase_sup_conj,phase_periast
-
