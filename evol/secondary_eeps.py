@@ -108,4 +108,4 @@ def generate_secondary_eeps(primary_eep,npoints=150):
 
     secondary_eeps = list(calculate_secondary_eeps(interpolated_primary_eep,deltas))[0]
 
-    return secondary_eeps
+    yield secondary_eeps
