@@ -299,7 +299,7 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
         list_str = ' '.join(['%.5f'%ll for ll in list_tmp[ii]])
         line =  '%s\t%s\t%s %s\n'%(dir_name,inlist_name,point_name,list_str)
         print 'Line: ',line
-        print 'COMBINATION --> 'list_tmp[ii]
+        print 'COMBINATION --> ',list_tmp[ii]
 
         summary_file_open.write(line)
 
