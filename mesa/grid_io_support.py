@@ -172,7 +172,7 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
     directory_segments = []
     keys               = adjpars.keys()
     indices            = [ adjpars[key]['index'] for key in keys ]
-    zipped             = sorted(zip(keys,indices),key=lambda x: x[1]))
+    zipped             = sorted(zip(keys,indices),key=lambda x: x[1])
     sortkeys,_         = zip(*zipped)
     # sortkeys           = np.array()
 
