@@ -172,9 +172,7 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
     directory_segments = []
     keys               = adjpars.keys()
     indices            = [ adjpars[key]['index'] for key in keys ]
-    zipped             = sorted(zip(keys,indices),key=lambda x: x[1])
-    sortkeys,_         = zip(*zipped)
-    # sortkeys           = np.array()
+    sortkeys           = np.array(sorted(zip(keys,indices),key=lambda x: x[1]))
 
     history_array      = []
     inlist_array       = []
@@ -200,7 +198,7 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
 
     # for combination in itertools.product(*combinations):
     for ii in range(len(adjpars['Zini']['values'])):
-        combination = [adjpars[key]['values'][ii] for key in sortkeys]
+        combination = [adjpars[key]['values'][ii] for key in sortkeys[:,0]]
         str_combination = [str(cmbntn) for cmbntn in combination]
         list_tmp.append(np.hstack(combination))
         list_str.append(np.hstack(str_combination))
