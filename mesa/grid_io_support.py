@@ -225,7 +225,7 @@ def write_mesa_inlist_zams(  inlist, history_file, logsdir,
                 'INITIAL_MASS'                  : '{:8.6f}d0'.format(initial_mass),
                 'MIXING_LENGTH_ALPHA'           : '{:5.4f}d0'.format(mlt_alpha),
                 'MIN_D_MIX'                     : '{:8.4f}d0'.format(10**log_minDmix),
-                'D_EXT'                         : '{:5.4f}d0'.format(10**log_Dext),
+                # 'D_EXT'                         : '{:5.4f}d0'.format(10**log_Dext),
                         }
 
         new_lines = []
