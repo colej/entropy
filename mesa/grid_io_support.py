@@ -204,7 +204,7 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
         list_str.append(np.hstack(str_combination))
 
 
-    for ii,combination in enumerate(itertools.product(*parts):
+    # for ii,combination in enumerate(itertools.product(*parts):
     for ii,set in enumerate(parts)
         stack         = np.hstack(set)
         print 'STACK: ',stack
