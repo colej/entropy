@@ -298,11 +298,11 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
         #                                            list_tmp[ii][1],list_tmp[ii][2],list_tmp[ii][3],list_tmp[ii][4])
         list_str = ' '.join(['%.5f'%ll for ll in list_tmp[ii]])
         line =  '%s\t%s\t%s %s\n'%(dir_name,inlist_name,point_name,list_str)
-        print line
+        print 'Line: ',line
 
         summary_file_open.write(line)
 
-	worker_line = '%s,%s,%s\n'%(inlist_name,dir_name,point_name)
+        worker_line = '%s,%s,%s\n'%(inlist_name,dir_name,point_name)
         worker_file_open = open(worker_name,'a')
         worker_file_open.write(worker_line)
         worker_file_open.close()
