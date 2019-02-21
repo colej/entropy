@@ -204,9 +204,9 @@ def make_sobol_filenames(adjpars, summary_file='./grid.summary', inlist_prefix=N
         list_str.append(np.hstack(str_combination))
 
 
-    # for ii,co
-    for ii,combination in enumerate(itertools.product(*parts)):
-        stack         = np.hstack(combination)
+    for ii,combination in enumerate(itertools.product(*parts):
+    for ii,set in enumerate(parts)
+        stack         = np.hstack(set)
         print 'STACK: ',stack
 
         if grid_type is not None: history_name = grid_type+'_'
