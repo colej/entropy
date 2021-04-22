@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+# import read_mesa as rm
 import os,logging
-import read_mesa as rm
 import subprocess
 from scipy.interpolate import interp1d
 

@@ -28,32 +28,33 @@ def parse_header(chain_file):
 def get_labels(adjpars,passbands = ['0','1','2','3'],perr0=['0','1']):
 
 	labels = {
-		  'phoebe_hjd0':'$\\mathrm{HJD_{0}\\,[d]}$',
-		  #'phoebe_hjd0':'$\\mathrm{BJD_{0}\\,[d]}$',
+		  'phoebe_hjd0':'$\\mathrm{BJD_{0}\\,[d]}$',
+		  # 'phoebe_hjd0':'$\\mathrm{HJD_{0}\\,[d]}$',
 		  'phoebe_period':'$\\mathrm{P_{orb}\\,[d]}$',
 		  'phoebe_sma':'$\\mathrm{a\\,[R_{\\odot}]}$',
 		  'phoebe_rm':'$\\mathrm{q\\,\\frac{M_2}{M_1}}$',
 		  'phoebe_vga':'$\\mathrm{\\gamma_0}$',
 		  'phoebe_incl':'$i \\,\\mathrm{[\\deg]}$',
 		  #'phoebe_perr0':'$\\omega_0-%s \\, \\mathrm{[rad]}$',
+		  'e_cos_omega':r'$e\cos\omega$',
+		  'e_sin_omega':r'$e\sin\omega$',
+		  'T2_div_T1':r'$\frac{T_2}{T_1}$',
 		  'phoebe_perr0':'$\\omega_0 \\, \\mathrm{[rad]}$',
 		  'phoebe_dperdt':'$\\frac{d\\omega}{dt} \\, \\mathrm{[rad/sec]}$',
 		  'phoebe_ecc':'$e$',
-		  'phoebe_f1':'$\\frac{P_{rot,1}}{P_{orb}}$',
-		  'phoebe_f2':'$\\frac{P_{rot,2}}{P_{orb}}$',
+		  'phoebe_f1':'$\\frac{\\omega_{rot,1}}{\\omega_{orb}}$',
+		  'phoebe_f2':'$\\frac{\\omega_{rot,2}}{\\omega_{orb}}$',
 		  'phoebe_teff1':'$\\mathrm{T_{eff,1}\\,[K]}$',
 		  'phoebe_teff2':'$\\mathrm{T_{eff,2}\\,[K]}$',
 		  'phoebe_pot1':'$\\mathrm{\\Omega_{1}}$',
 		  'phoebe_pot2':'$\\mathrm{\\Omega_{2}}$',
 		  'phoebe_alb1':'$\\mathrm{A_1}$',
 		  'phoebe_alb2':'$\\mathrm{A_2}$',
+		  'phoebe_grb1':'$\\beta_1$',
+		  'phoebe_grb2':'$\\beta_2$',
 		  'phoebe_hla':'$\\mathrm{L_{1,%s}}$',
 		  'phoebe_cla':'$\\mathrm{L_{2,%s}}$',
 		  'phoebe_el3':'$\\mathrm{L_{3,%s}}$',
-		  'phoebe_spots_colatitude':'$\\mathrm{Co-lat\\,[rad]}$',
-		  'phoebe_spots_longitude':'$\\mathrm{Longitude\\,[rad]}$',
-		  'phoebe_spots_radius':'$\\mathrm{R_{spot}\\,[rad]}$',
-		  'phoebe_spots_tempfactor':'$\\mathrm{\\frac{T_{spot}}{T_{eff}}}$'
 		 }
 
 	hla_counter = 0

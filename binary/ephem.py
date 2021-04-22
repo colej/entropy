@@ -14,10 +14,7 @@ def time_to_ph(time, period=None, t0=None):
     output: phase (float or array)
     '''
 
-    if t0 > 2400000:
-        t0 -= 2400000.
-    if time[0] > 2400000:
-        time = np.array( [t-2400000. for t in time] )
+
     ph = np.array( [ -0.5+( ( t-t0-0.5*period ) % period ) / period for t in time ] )
     return ph
 
